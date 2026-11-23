@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
 import '../models/profile.dart';
 import '../widgets/info_tile.dart';
+import '../services/auth_service.dart';
 import 'edit_profile_page.dart';
 import 'about_page.dart';
+import 'login_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final Profile profile;
@@ -20,12 +23,72 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Profile _profile;
+
   @override
   void initState() {
     super.initState();
 
     // Mengambil data profil awal dari ProfilePage.
     _profile = widget.profile;
+  }
+
+  // Fungsi Logout Firebase
+  Future<void> _logout() async {
+    final konfirmasi = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Konfirmasi Logout'),
+        content: const Text(
+          'Apakah kamu yakin ingin keluar dari akun?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext, false);
+            },
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext, true);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Keluar'),
+          ),
+        ],
+      ),
+    );
+
+    if (konfirmasi != true) return;
+
+    try {
+      await AuthService().logout();
+
+      if (!mounted) return;
+
+      // Menghapus halaman sebelumnya dan kembali ke Login.
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+            onToggleTheme: widget.onToggleTheme,
+          ),
+        ),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal logout: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _editProfile() async {
@@ -46,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _profile = profileBaru;
       });
 
-      // Menampilkan notifikasi berhasi
+      // Menampilkan notifikasi berhasil.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -87,6 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
 
+      // Navigation Drawer
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -134,14 +198,39 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AboutPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const AboutPage(),
+                  ),
                 );
+              },
+            ),
+
+            // Pemisah menu
+            const Divider(),
+
+            // Menu Logout
+            ListTile(
+              leading: const Icon(
+                Icons.logout,
+                color: Colors.red,
+              ),
+              title: const Text(
+                'Keluar',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _logout();
               },
             ),
           ],
         ),
       ),
 
+      // Konten Profil Mahasiswa
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -157,17 +246,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         children: [
                           ClipOval(
-                              child: SizedBox(
-                                width: 130,
-                                height: 130,
-                                child: Image.asset(
-                                  'assets/images/profile_hammock.png',
-                                  fit: BoxFit.cover,
-                                  alignment: const Alignment(0.15, 0),
-                                ),
+                            child: SizedBox(
+                              width: 130,
+                              height: 130,
+                              child: Image.asset(
+                                'assets/images/profile_hammock.png',
+                                fit: BoxFit.cover,
+                                alignment: const Alignment(0.15, 0),
                               ),
                             ),
+                          ),
+
                           const SizedBox(height: 16),
+
                           Text(
                             _profile.nama,
                             textAlign: TextAlign.center,
@@ -176,12 +267,19 @@ class _ProfilePageState extends State<ProfilePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+
                           const SizedBox(height: 6),
+
                           Text(_profile.nim),
                           Text(_profile.prodi),
                           Text(_profile.kelas),
+
                           const SizedBox(height: 16),
-                          Text(_profile.bio, textAlign: TextAlign.center),
+
+                          Text(
+                            _profile.bio,
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
                     ),
@@ -203,16 +301,19 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                         ),
+
                         InfoTile(
                           icon: Icons.email_outlined,
                           label: 'Email',
                           value: widget.profile.email,
                         ),
+
                         InfoTile(
                           icon: Icons.phone_outlined,
                           label: 'Nomor HP',
                           value: widget.profile.noHp,
                         ),
+
                         InfoTile(
                           icon: Icons.code,
                           label: 'GitHub',
@@ -227,13 +328,17 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
+
+      // Bottom Navigation
       bottomNavigationBar: NavigationBar(
         selectedIndex: 0,
         onDestinationSelected: (index) {
           if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AboutPage()),
+              MaterialPageRoute(
+                builder: (context) => const AboutPage(),
+              ),
             );
           }
         },

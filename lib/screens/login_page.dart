@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'register_page.dart';
 import 'profile_page.dart';
 import '../models/profile.dart';
 import '../services/auth_service.dart';
@@ -42,6 +42,15 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login berhasil! Selamat datang.'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
 
       final user = credential.user;
 
@@ -253,6 +262,18 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                         ),
+                      ),
+
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegisterPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('Belum punya akun? Daftar sekarang'),
                       ),
 
                       const SizedBox(height: 20),
