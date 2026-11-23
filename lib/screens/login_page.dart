@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'register_page.dart';
 import 'profile_page.dart';
-import '../models/profile.dart';
+// import '../models/profile.dart';
 import '../services/auth_service.dart';
+import '../utils/profile_data.dart';
 
 class LoginPage extends StatefulWidget {
   final ValueChanged<bool> onToggleTheme;
@@ -59,17 +60,20 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       // Profil mahasiswa tetap menggunakan data lokal.
-      final profile = Profile(
-        nama: 'Rizki Riana Putra',
-        nim: '1124160241',
-        prodi: 'Teknik Informatika Software Engineering',
-        kelas: 'TI24SESHIFT',
-        email: user.email ?? '',
-        noHp: '081283561060',
-        github: 'RiyutaDev',
-        bio:
-            'Mahasiswa yang tertarik pada teknologi dan pengembangan aplikasi berbasis web.',
-      );
+      // final profile = Profile(
+      //   nama: 'Rizki Riana Putra',
+      //   nim: '1124160241',
+      //   prodi: 'Teknik Informatika Software Engineering',
+      //   kelas: 'TI24SESHIFT',
+      //   email: user.email ?? '',
+      //   noHp: '081283561060',
+      //   github: 'RiyutaDev',
+      //   bio:
+      //       'Mahasiswa yang tertarik pada teknologi dan pengembangan aplikasi berbasis web.',
+      // );
+
+      //profil mahasiswea berdasarkan email yang login
+      final profile = createStudentProfile(user.email ?? '');
 
       Navigator.pushReplacement(
         context,
