@@ -305,19 +305,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         InfoTile(
                           icon: Icons.email_outlined,
                           label: 'Email',
-                          value: widget.profile.email,
+                          value: _profile.email,
                         ),
 
                         InfoTile(
                           icon: Icons.phone_outlined,
                           label: 'Nomor HP',
-                          value: widget.profile.noHp,
+                          value: _profile.noHp,
                         ),
 
                         InfoTile(
                           icon: Icons.code,
                           label: 'GitHub',
-                          value: widget.profile.github,
+                          value: _profile.github,
                         ),
                       ],
                     ),
