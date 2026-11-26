@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'firebase_options.dart';
-// import 'screens/login_page.dart';
 import 'screens/splash_screen.dart';
+import 'notification_service.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +15,17 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // BARU: Registrasi handler background FCM
+  FirebaseMessaging.onBackgroundMessage(
+    firebaseMessagingBackgroundHandler,
+  );
+
   runApp(const MyApp());
+
+ // Inisialisasi notifikasi setelah aplikasi berjalan.
+NotificationService.init().catchError((error) {
+  debugPrint('[FCM] Gagal inisialisasi: $error');
+});
 }
 
 class MyApp extends StatefulWidget {
@@ -37,7 +49,12 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Profil Mahasiswa',
       debugShowCheckedModeBanner: false,
+
+      // BARU: Navigator untuk navigasi notifikasi
+      navigatorKey: navigatorKey,
+
       themeMode: _themeMode,
+
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -45,6 +62,7 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.light,
         ),
       ),
+
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -52,7 +70,11 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
         ),
       ),
-      home: SplashScreen(onToggleTheme: _toggleTheme),
+
+      // Tetap menggunakan SplashScreen lama
+      home: SplashScreen(
+        onToggleTheme: _toggleTheme,
+      ),
     );
   }
 }
