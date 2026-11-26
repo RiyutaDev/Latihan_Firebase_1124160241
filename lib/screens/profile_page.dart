@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import 'edit_profile_page.dart';
 import 'about_page.dart';
 import 'login_page.dart';
+import '../fcm_token_card.dart';
 
 class ProfilePage extends StatefulWidget {
   final Profile profile;
@@ -282,10 +283,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
+                      
                     ),
                   ),
 
                   const SizedBox(height: 16),
+
+                  const FcmTokenCard(),
 
                   Card(
                     child: Column(
