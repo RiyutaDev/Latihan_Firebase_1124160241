@@ -10,10 +10,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 android {
     namespace = "com.example.uts_mobilesoal2"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -43,4 +44,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 flutter {
     source = "../.."
+}
+
+dependencies { 
+// Wajib untuk flutter_local_notifications
+coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
 }
